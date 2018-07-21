@@ -46,6 +46,16 @@ std::vector<std::string> split(const std::string &text, char sep) {
 	return tokens;
 }
 
+void AEscapist3BlockGrid::MovePiece(AEscapist3Block* block) {
+	// Compare distance with users block
+	// 
+//	UserPiece.
+	//userPiece->Move_XAxis();
+	//userPiece->Move_YAxis();
+
+
+}
+
 
 void AEscapist3BlockGrid::BeginPlay()
 {
@@ -90,6 +100,7 @@ void AEscapist3BlockGrid::BeginPlay()
 				SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 				Pawn = GetWorld()->SpawnActor<APieceActor>(PawnLocation, FRotator(0, 0, 0));
 				Pawn->Init(numPieces++, x, y);
+				this->userPiece = Pawn;
 			}
 			// Tell the block about its owner
 			if (NewBlock != nullptr) {

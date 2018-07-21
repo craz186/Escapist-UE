@@ -20,9 +20,13 @@ public:
 	void Init(int playerNum, int x, int y);
 
 	ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> BlueMaterial = (TEXT("/Game/Puzzle/Meshes/BlueMaterial.BlueMaterial"));
-	ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> ClayBrickMaterial = (TEXT("/Game/StarterContent/Materials/M_Brick_Clay_New.M_Brick_Clay_New"));
+	ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> ClayBrickMaterial = (TEXT("/Game/Puzzle/Meshes/BlueMaterial.BlueMaterial")); // (TEXT("/Game/StarterContent/Materials/M_Brick_Clay_New.M_Brick_Clay_New"));
 	UMaterialInstance* OrangeMat;
 	UMaterialInstance* ClayBrick;
+	int X = 0;
+	int Y = 0;
+	int LastX = 0;
+	int LastY = 0;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

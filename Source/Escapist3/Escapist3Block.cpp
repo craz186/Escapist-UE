@@ -96,6 +96,11 @@ void AEscapist3Block::OnFingerPressedBlock(ETouchIndex::Type FingerIndex, UPrimi
 
 void AEscapist3Block::HandleClicked()
 {
+	// Call back to the BlockGrid indicating to move a piece here
+	OwningGrid->MovePiece(this);
+
+
+
 	// Check we are not already active
 	if (!bIsActive)
 	{

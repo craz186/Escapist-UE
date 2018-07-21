@@ -43,14 +43,16 @@ public:
 	float BlockSpacing;
 
 	std::list<AEscapist3Block*> tiles = *new std::list<AEscapist3Block*>();
+	APieceActor* userPiece;
 
 protected:
+	
 	// Begin AActor interface
 	virtual void BeginPlay() override;
 	// End AActor interface
 
 public:
-
+	void MovePiece(AEscapist3Block* block);
 	/** Handle the block being clicked */
 	void AddScore();
 
@@ -58,6 +60,8 @@ public:
 	FORCEINLINE class USceneComponent* GetDummyRoot() const { return DummyRoot; }
 	/** Returns ScoreText subobject **/
 	FORCEINLINE class UTextRenderComponent* GetScoreText() const { return ScoreText; }
+
+	void MovePiece(AEscapist3Block block);
 };
 
 
