@@ -10,8 +10,10 @@
 #include <fstream>
 #include <iostream>
 #include "ObstacleBlock.h"
-#include "PieceActor.h"
+#include "Piece.h"
 #include "Escapist3Block.h"
+#include "Move.h"
+#include "MoveResult.h"
 #include "Escapist3BlockGrid.generated.h"
 
 /** Class used to spawn blocks and manage score */
@@ -43,7 +45,7 @@ public:
 	float BlockSpacing;
 
 	std::list<AEscapist3Block*> tiles = *new std::list<AEscapist3Block*>();
-	APieceActor* userPiece;
+	APiece* userPiece;
 
 protected:
 	
@@ -52,16 +54,19 @@ protected:
 	// End AActor interface
 
 public:
-	void MovePiece(AEscapist3Block* block);
 	/** Handle the block being clicked */
 	void AddScore();
+
+	void CreateBoard(std::string path);
+
+	void SpawnActor(std::string character, int x, int y);
 
 	/** Returns DummyRoot subobject **/
 	FORCEINLINE class USceneComponent* GetDummyRoot() const { return DummyRoot; }
 	/** Returns ScoreText subobject **/
 	FORCEINLINE class UTextRenderComponent* GetScoreText() const { return ScoreText; }
 
-	void MovePiece(AEscapist3Block block);
+	MoveResult MovePiece(AEscapist3Block* block);
 };
 
 
