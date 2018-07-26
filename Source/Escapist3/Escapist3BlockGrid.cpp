@@ -215,9 +215,11 @@ void AEscapist3BlockGrid::BeginPlay()
 {
 	Super::BeginPlay();
 
-	std::string path = "C:\\Users\\Sean\\Documents\\Chessmate v2\\Assets\\Levels\\TestLevel.txt";
+	// TODO Need to change how we read this in
+	FString path = FPaths::GameSourceDir().Append("Escapist3/").Append("TestLevel.txt");	
+	UE_LOG(LogTemp, Warning, TEXT("TestLevel path is: %s"), *path);
 
-	CreateBoard(path);
+	CreateBoard(std::string(TCHAR_TO_UTF8(*path)));
 }
 
 
