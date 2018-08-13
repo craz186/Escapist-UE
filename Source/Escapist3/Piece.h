@@ -8,6 +8,7 @@
 #include "Materials/MaterialInstance.h"
 #include <vector>
 #include "Move.h"
+#include "Point.h"
 #include "Piece.generated.h"
 
 UCLASS()
@@ -43,5 +44,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* OurVisibleComponent;
 
-	std::vector<FVector> GetAllMoveCoordinatesToPostion(AMove* move);
+	std::vector<Point> GetAllMoveCoordinatesForMove(AMove* move);
+	std::vector<Point> GetAllPointsOnPath(AMove* move, float xModifier, float yModifier);
 };

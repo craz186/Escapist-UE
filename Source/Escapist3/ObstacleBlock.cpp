@@ -3,5 +3,8 @@
 #include "ObstacleBlock.h"
 
 
-AObstacleBlock::AObstacleBlock() : AEscapist3Block(baseMaterial) {}
+AObstacleBlock::AObstacleBlock() : ATile(baseMaterial) {}
 
+void AObstacleBlock::Init(int x, int y, bool allowsPiece) {
+	Super::Init(x, y, allowsPiece);
+}

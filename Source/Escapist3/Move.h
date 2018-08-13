@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include <sstream>
+#include <cmath>
 #include "Direction.h"
 
 using namespace std;
@@ -25,6 +27,10 @@ public:
 	int getDistance();
 
 	AMove reverse();
+
+	string ToString();
+
+	FVector ToVector();
 
 	~AMove();
 

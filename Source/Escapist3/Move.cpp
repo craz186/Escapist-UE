@@ -2,10 +2,9 @@
 
 #include "Move.h"
 
-
 AMove::AMove(Direction direction, int distance) {
 	_direction = direction;
-	_distance = distance;
+	_distance = std::abs(distance);
 }
 
 int AMove::getScore() {
@@ -46,6 +45,45 @@ AMove AMove::reverse() {
 		}
 	}
 	return *new AMove(reverseDirection, _distance);
+}
+
+FVector AMove::ToVector() {
+	FVector returnVector;
+	if (_direction == Direction::Down) {
+		returnVector = FVector(-(_distance * 250), 0, 0); 
+	}
+	else if (_direction == Direction::Up) {
+		returnVector = FVector(_distance * 250, 0, 0);
+	}
+	else if (_direction == Direction::Left) {
+		returnVector = FVector(0, -(_distance * 250), 0);
+	}
+	else if (_direction == Direction::Right) {
+		returnVector = FVector(0, _distance * 250, 0);
+	}
+
+	return returnVector;
+}
+
+string AMove::ToString() {
+	std::ostringstream oss;
+	oss << "Direction: ";
+	
+	if (_direction == Direction::Up) {
+		oss << "Up";
+	}
+	else if (_direction == Direction::Down) {
+		oss << "Down";
+	}
+	else if (_direction == Direction::Left) {
+		oss << "Left";
+	}
+	else if (_direction == Direction::Right) {
+		oss << "Right";
+	}
+	oss << ", Distance: " << _distance;
+
+	return oss.str();
 }
 
 AMove::~AMove()

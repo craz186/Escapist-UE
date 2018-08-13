@@ -13,8 +13,8 @@
 // Sets default values
 APiece::APiece()
 {
-	
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
+
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
@@ -34,39 +34,44 @@ APiece::APiece()
 }
 
 void APiece::Init(int x, int y) {
-
 	X = x;
 	Y = y;
-	OurVisibleComponent->SetRelativeLocation(FVector(x * 250, y * 250, 0.f));
 	// Attach our camera and visible object to our root component. Offset and rotate the camera.
 	OurVisibleComponent->SetMaterial(0, OrangeMat);
 	
-		//OurVisibleComponent->GetComponentLocation().at(0) << ", " << OurVisibleComponent->GetComponentLocation()[1] << ", " << OurVisibleComponent->GetComponentLocation()[2];
 	UE_LOG(LogTemp, Warning, TEXT("PieceActor location is: %s"), *(GetActorLocation().ToString()));//+ " is:" +
 	
 	UE_LOG(LogTemp, Warning, TEXT("Visible component location is: %s"), *(OurVisibleComponent->GetComponentLocation().ToString()));//+ " is:" +
 
 };
 
-std::vector<FVector> APiece::GetAllMoveCoordinatesToPostion(AMove* move) {
-	std::vector<FVector> returnPoints;
+std::vector<Point> APiece::GetAllPointsOnPath(AMove* move, float xModifier, float yModifier) {
+	auto * returnPoints = new vector<Point>;
+	float tempX = GetActorLocation().X / 250;
+	float tempY = GetActorLocation().Y / 250;
+	for (int i = 0; i < move->getDistance(); i++) {
+		tempX += xModifier;
+		tempY += yModifier;
+		returnPoints->emplace_back(tempX, tempY);
+	}
+	return *returnPoints;
+}
 
-	// figure out direction to position
-
-	//
+std::vector<Point> APiece::GetAllMoveCoordinatesForMove(AMove* move) {
+	std::vector<Point> returnPoints;
 
 	switch (move->getDirection()) {
 	case Direction::Up:
-	//	returnPoints = getAllPointsOnPath(move, 0, -1);
+		returnPoints = GetAllPointsOnPath(move, 1, 0);
 		break;
 	case Direction::Down:
-	//	returnPoints = getAllPointsOnPath(move, 0, 1);
+		returnPoints = GetAllPointsOnPath(move, -1, 0);
 		break;
 	case Direction::Left:
-	//	returnPoints = getAllPointsOnPath(move, -1, 0);
+		returnPoints = GetAllPointsOnPath(move, 0, -1);
 		break;
 	case Direction::Right:
-	//	returnPoints = getAllPointsOnPath(move, 1, 0);
+		returnPoints = GetAllPointsOnPath(move, 0, 1);
 		break;
 	}
 
