@@ -52,7 +52,6 @@ AMove* ABoard::CalculateMoveToBlock(ATile* block) {
 	UE_LOG(LogTemp, Warning, TEXT("User location is: %s"), *userPiece->GetActorLocation().ToString());
 	UE_LOG(LogTemp, Warning, TEXT("Block location is: %s"), *block->GetActorLocation().ToString());
 
-	// TODO Need to calculate distance between block and piece
 	float xDistanceToBlock = userPiece->GetActorLocation().X - (block->GetActorLocation().X);
 	float yDistanceToBlock = userPiece->GetActorLocation().Y - (block->GetActorLocation().Y);
 	int xCoord = xDistanceToBlock / BlockSpacing;
@@ -87,6 +86,16 @@ bool ABoard::IsValidPosition(int x, int y) {
 	return tiles.at((x * (_xLength)) + y)->DoesAllowPiece(); //&& _tiles[(x * _xLength) + y].DoesAllowPiece();
 };
 
+void ABoard::HandleUserMovement(ATile* clickedBlock) {
+	MoveResult moveResult = this->MovePiece(clickedBlock);
+
+	if (moveResult == MoveResult::ValidMove) {
+		UE_LOG(LogTemp, Warning, TEXT("Valid Move by user now movng AI Pieces"));
+		aiManager->moveAllAiPieces(this, userPiece);
+	}
+
+}
+
 MoveResult ABoard::MovePiece(ATile* block) {
 	MoveResult moveResult = MoveResult::ValidMove;
 
@@ -104,7 +113,6 @@ MoveResult ABoard::MovePiece(ATile* block) {
 
 			return MoveResult::InvalidMove;
 		}
-		//todo AIManager
 		
 		//Block* blockToBeActioned = checkBlockExists(point.getX(), point.getY());
 		//if (blockToBeActioned != nullptr) {
@@ -144,6 +152,7 @@ MoveResult ABoard::MovePiece(ATile* block) {
 		*/
 		//}
 	}
+
 	UE_LOG(LogTemp, Warning, TEXT("Filtered location is: %s"), *filteredMove->ToVector().ToString());
 	userPiece->SetActorLocation(userPiece->GetActorLocation() + filteredMove->ToVector());
 	UE_LOG(LogTemp, Warning, TEXT("User location is: %s"), *userPiece->GetActorLocation().ToString());
@@ -151,6 +160,25 @@ MoveResult ABoard::MovePiece(ATile* block) {
 	return moveResult;
 };
 
+MoveResult ABoard::MovePiece(APiece* piece, AMove move) {
+	MoveResult moveResult = MoveResult::ValidMove;
+	std::vector<Point> moveCoordinates = piece->GetAllMoveCoordinatesForMove(&move);
+	for (int i = 0; i < moveCoordinates.size(); i++) {
+		Point point = moveCoordinates.at(i);
+		// validate move here for obstacles and blocks
+		// TODO SG Maybe this should be a valid move but filter it to stop the move early.
+		if (!IsValidPosition(point.getX(), point.getY())) {
+			UE_LOG(LogTemp, Warning, TEXT("Invalid move"));
+
+			return MoveResult::InvalidMove;
+		}
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Filtered location is: %s"), *move.ToVector().ToString());
+	piece->SetActorLocation(piece->GetActorLocation() + move.ToVector());
+	UE_LOG(LogTemp, Warning, TEXT("User location is: %s"), *piece->GetActorLocation().ToString());
+
+	return moveResult;
+}
 /**
 *'D' is for Dog
 * A 'U' infront of a letter will indicate that this is a users piece
@@ -163,9 +191,16 @@ void ABoard::SpawnActor(std::string character, int x, int y) {
 
 	if (character == "0") {
 		ATile* obstacle = GetWorld()->SpawnActor<AObstacleBlock>(BlockLocation, FRotator(0, 0, 0));
-		obstacle->OwningGrid = this;
+		obstacle->OwningGrid = this; 
 		obstacle->Init(x, y, false);
 		tiles.push_back(obstacle);
+	}
+	else if (character == "2") {
+		AGoalTile* goal = GetWorld()->SpawnActor<AGoalTile>(BlockLocation, FRotator(0, 0, 0));
+		goal->OwningGrid = this;
+		goal->Init(x, y, true);
+		tiles.push_back(goal);
+		_goal = goal; 
 	}
 	// Spawn a block
 	else {
@@ -175,12 +210,13 @@ void ABoard::SpawnActor(std::string character, int x, int y) {
 		tiles.push_back(NewBlock);
 		UE_LOG(LogTemp, Warning, TEXT("Spawning tile at expected location %s, Tile is at real location: %s"), *BlockLocation.ToString(), *NewBlock->GetActorLocation().ToString());
 	}
+	
 
 	if (character == "UD") {
 		FActorSpawnParameters SpawnInfo;
 		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		Pawn = GetWorld()->SpawnActor<APiece>(PawnLocation, FRotator(0, 0, 0));
-		Pawn->Init(x, y);
+		Pawn->Init(x, y, true);
 		this->userPiece = Pawn;
 		UE_LOG(LogTemp, Warning, TEXT("Spawning piece at expected location %s, Tile is at real location: %s"), *BlockLocation.ToString(), *Pawn->GetActorLocation().ToString());
 
@@ -189,16 +225,12 @@ void ABoard::SpawnActor(std::string character, int x, int y) {
 		FActorSpawnParameters SpawnInfo;
 		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		Pawn = GetWorld()->SpawnActor<APiece>(PawnLocation, FRotator(0, 0, 0));
-		Pawn->Init(x, y);
+		Pawn->Init(x, y, false);
 		aiPieces.push_back(Pawn);
 		UE_LOG(LogTemp, Warning, TEXT("Spawning piece at expected location %s, Tile is at real location: %s"), *BlockLocation.ToString(), *Pawn->GetActorLocation().ToString());
 
 	}
 	
-	//else if (character == "2") {
-	//	goal = new GoalTile(x, y);
-	//	tile = goal;
-	//}
 	//else if (character.rfind('U', 0) == 0) {
 	//	userPiece = new Dog(x, y);
 	//	userPiece->setUserPiece(true);
@@ -233,6 +265,7 @@ void ABoard::CreateBoard(std::string path) {
 			SpawnActor(character, x, y);
 		}
 	}
+	aiManager = new AIManager(aiPieces);
 
 }
 
@@ -255,6 +288,14 @@ void ABoard::AddScore()
 
 	// Update text
 	ScoreText->SetText(FText::Format(LOCTEXT("ScoreFmt", "Score: {0}"), FText::AsNumber(Score)));
+}
+
+AGoalTile* ABoard::getGoal() {
+	return _goal;
+}
+
+BoardInfo* ABoard::GetBoardInfo() {
+	return new BoardInfo(userPiece, aiPieces, tiles, _goal, _xLength, _yLength);
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -28,14 +28,13 @@ APiece::APiece()
 	ClayBrick = ClayBrickMaterial.Get();
 	OurVisibleComponent->SetRelativeScale3D(FVector(1.f, 1.f, 0.25f));
 	OurCamera->SetupAttachment(RootComponent);
-	//OurCamera->SetRelativeLocation(FVector(-250.0f, 0.0f, 250.0f));
-	//OurCamera->SetRelativeRotation(FRotator(-45.0f, 0.0f, 0.0f));
 	OurVisibleComponent->SetupAttachment(RootComponent);
 }
 
-void APiece::Init(int x, int y) {
+void APiece::Init(int x, int y, bool isUserPiece) {
 	X = x;
 	Y = y;
+	_isUserPiece = isUserPiece;
 	// Attach our camera and visible object to our root component. Offset and rotate the camera.
 	OurVisibleComponent->SetMaterial(0, OrangeMat);
 	
@@ -78,6 +77,10 @@ std::vector<Point> APiece::GetAllMoveCoordinatesForMove(AMove* move) {
 	return returnPoints;
 }
 
+std::list<AMove> APiece::GetMoves() {
+	return _validMoves;
+}
+
 
 // Called when the game starts or when spawned
 void APiece::BeginPlay()
@@ -100,3 +103,6 @@ void APiece::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+PieceInfo* APiece::GetPieceInfo() {
+	return new PieceInfo(GetActorLocation(), GetMoves(), _isUserPiece);
+}

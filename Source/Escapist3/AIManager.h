@@ -3,9 +3,14 @@
 #pragma once
 
 #include "Piece.h"
-#include "Board.h"
 #include <list>
+#include <cstdlib>
 #include <cmath>
+#include "BoardInfo.h"
+#include "PieceInfo.h"
+#include "Move.h"
+#include "Point.h"
+#include "GoalTile.h"
 #include "CoreMinimal.h"
 
 class ABoard;
@@ -14,23 +19,22 @@ class ESCAPIST3_API AIManager
 
 private:
 	std::list<APiece*> _aiPieces;
-	const int MaxSearchDepth = 2;
+	const int MaxSearchDepth = 4;
 
-	AMove miniMax(ABoard &board, APiece &currentPiece, APiece &opponentPiece, int currentDepth);
+	AMove miniMax(BoardInfo* board, PieceInfo* currentPiece, PieceInfo* opponentPiece, int currentDepth);
 
 	void printDepthTabs(int currentDepth);
 
-	int scoreMove(APiece &currentPiece, Point beforePoint, Point afterPoint, AMove move, ABoard board);
+	int scoreMove(PieceInfo* currentPiece, Point beforePoint, Point afterPoint, AMove* move, BoardInfo* board);
 
 	static int calculateDistanceBetweenTwoPoints(Point first, Point second);
 
 public:
-	explicit AIManager(list<APiece *> &_aiPieces);
-	~AIManager();
+	AIManager(std::list<APiece *> _aiPieces);
 
-	void moveAllAiPieces(ABoard &board, APiece &opponent);
+	void moveAllAiPieces(ABoard* board, APiece* opponent);
 
-	void getAiPieces(list<APiece*>& returnedList);
+	void getAiPieces(std::list<APiece*>& returnedList);
 
 	void removePiece(APiece &pieceToBeTaken);
 

@@ -7,8 +7,10 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Materials/MaterialInstance.h"
 #include <vector>
+#include <list>
 #include "Move.h"
 #include "Point.h"
+#include "PieceInfo.h"
 #include "Piece.generated.h"
 
 UCLASS()
@@ -20,7 +22,7 @@ public:
 	// Sets default values for this pawn's properties
 	APiece();
 
-	void Init(int x, int y);
+	void Init(int x, int y, bool isUserPiece);
 
 	ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> BlueMaterial = (TEXT("/Game/Puzzle/Meshes/BlueMaterial.BlueMaterial"));
 	ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> ClayBrickMaterial = (TEXT("/Game/Puzzle/Meshes/BlueMaterial.BlueMaterial")); // (TEXT("/Game/StarterContent/Materials/M_Brick_Clay_New.M_Brick_Clay_New"));
@@ -30,6 +32,23 @@ public:
 	int Y = 0;
 	int LastX = 0;
 	int LastY = 0;
+	bool _isUserPiece;
+
+	std::list<AMove> _validMoves{
+		AMove(Direction::Up, 3),
+		AMove(Direction::Down, 3),
+		AMove(Direction::Left, 3),
+		AMove(Direction::Right, 3),
+		AMove(Direction::Up, 2),
+		AMove(Direction::Down, 2),
+		AMove(Direction::Left, 2),
+		AMove(Direction::Right, 2),
+		AMove(Direction::Up, 1),
+		AMove(Direction::Down, 1),
+		AMove(Direction::Left, 1),
+		AMove(Direction::Right, 1)
+	};
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -44,6 +63,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* OurVisibleComponent;
 
+	PieceInfo* GetPieceInfo();
+
 	std::vector<Point> GetAllMoveCoordinatesForMove(AMove* move);
 	std::vector<Point> GetAllPointsOnPath(AMove* move, float xModifier, float yModifier);
+	std::list<AMove> GetMoves();
+
 };

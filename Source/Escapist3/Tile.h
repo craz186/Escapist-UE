@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Point.h"
 #include "Tile.generated.h"
 
 /** A block that can be clicked */
@@ -26,6 +27,9 @@ public:
 	ATile(FString& baseMaterial);
 
 	void Init(int x, int y, bool allowsPiece = true);
+
+	int _x;
+	int _y;
 
 	/** Are we currently active? */
 	bool bIsActive;
@@ -60,6 +64,8 @@ public:
 	void Highlight(bool bOn);
 
 	bool DoesAllowPiece();
+
+	Point* getPointLocation();
 
 public:
 	/** Returns DummyRoot subobject **/

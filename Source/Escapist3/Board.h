@@ -14,9 +14,12 @@
 #include "Tile.h"
 #include "Move.h"
 #include "Point.h"
+#include "GoalTile.h"
 #include <cmath>
 #include "MoveResult.h"
 #include "EscapistUtils.h"
+#include "BoardInfo.h"
+#include "AIManager.h"
 #include "Board.generated.h"
 
 /** Class used to spawn blocks and manage score */
@@ -53,6 +56,10 @@ public:
 	APiece* userPiece;
 	std::list<APiece*> aiPieces;
 
+	AIManager* aiManager;
+
+	AGoalTile* _goal;
+
 
 protected:
 	
@@ -77,9 +84,13 @@ public:
 
 	MoveResult MovePiece(ATile* block);
 
+	void HandleUserMovement(ATile* clickedBlock);
+
 	bool IsValidPosition(int x, int y);
 
+	MoveResult MovePiece(APiece* piece, AMove move);
+
+	BoardInfo* GetBoardInfo();
+
+	AGoalTile* getGoal();
 };
-
-
-

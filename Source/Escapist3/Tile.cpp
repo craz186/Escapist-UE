@@ -80,6 +80,8 @@ ATile::ATile(FString& baseMaterial)
 }
 
 void ATile::Init(int x, int y, bool allowsPiece) {
+	_x = x;
+	_y = y;
 	_allowsPiece = allowsPiece;
 	RootComponent->SetRelativeLocation(FVector(x * 250, y * 250, 0.f));
 }
@@ -98,7 +100,7 @@ void ATile::OnFingerPressedBlock(ETouchIndex::Type FingerIndex, UPrimitiveCompon
 void ATile::HandleClicked()
 {
 	// Call back to the BlockGrid indicating to move a piece here
-	OwningGrid->MovePiece(this);
+	OwningGrid->HandleUserMovement(this);
 
 
 
@@ -138,4 +140,8 @@ void ATile::Highlight(bool bOn)
 
 bool ATile::DoesAllowPiece() {
 	return _allowsPiece;
+}
+
+Point* ATile::getPointLocation() {
+	return new Point(_x, _y);
 }

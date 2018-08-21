@@ -6,9 +6,6 @@
 #include "Tile.h"
 #include "ObstacleBlock.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class ESCAPIST3_API AObstacleBlock : public ATile
 {
